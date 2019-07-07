@@ -1,7 +1,28 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
+use tf;
+use std;
+
+
+pub mod error;
+// pub mod operation;
+pub mod buffer;
+pub mod graph;
+pub mod tensor;
+pub mod tensor_type;
+
+pub use error::{TFError, Error};
+pub(crate) use error::Status;
+
+use buffer::{Buffer, StrBuffer};
+pub use graph::Graph;
+pub use tensor::Tensor;
+pub use tensor_type::TensorType;
+
+type Result<T> = std::result::Result<T, Error>;
+
+pub fn tf_version() -> &'static str {
+    unsafe {
+        std::ffi::CStr::from_ptr(tf::TF_Version())
+            .to_str()
+    }.unwrap_or("")
 }
+
