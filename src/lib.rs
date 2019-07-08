@@ -3,11 +3,13 @@ use std;
 
 
 pub mod error;
-// pub mod operation;
 pub mod buffer;
 pub mod graph;
 pub mod tensor;
 pub mod tensor_type;
+pub mod output;
+pub mod input;
+pub mod operation;
 
 pub use error::{TFError, Error};
 pub(crate) use error::Status;
@@ -16,6 +18,9 @@ use buffer::{Buffer, StrBuffer};
 pub use graph::Graph;
 pub use tensor::Tensor;
 pub use tensor_type::TensorType;
+pub use output::Output;
+pub use input::Input;
+pub use operation::Operation;
 
 type Result<T> = std::result::Result<T, Error>;
 

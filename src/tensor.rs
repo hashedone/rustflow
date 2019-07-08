@@ -5,8 +5,7 @@ use std::{self, mem, ops, slice};
 
 /// Trait for any type which can be used as Tensorflow tensor
 pub(crate) trait TFTensor {
-    fn tf_tensor(&self) -> &tf::TF_Tensor;
-    fn tf_tensor_mut(&mut self) -> &mut tf::TF_Tensor;
+    fn tensor(&self) -> &tf::TF_Tensor;
 }
 
 /// Internally allocated Tensor
@@ -85,12 +84,8 @@ impl<T: TensorType + Copy> Tensor<T> {
 }
 
 impl<T> TFTensor for Tensor<T> {
-    fn tf_tensor(&self) -> &tf::TF_Tensor {
+    fn tensor(&self) -> &tf::TF_Tensor {
         unsafe { &*self.tensor }
-    }
-
-    fn tf_tensor_mut(&mut self) -> &mut tf::TF_Tensor {
-        unsafe { &mut *self.tensor }
     }
 }
 
