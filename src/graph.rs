@@ -1,5 +1,5 @@
 use tf;
-use std::{ffi, iter};
+use std::{ffi, iter, ops};
 use crate::{Buffer, StrBuffer, Result, Status, Operation};
 
 
@@ -19,7 +19,7 @@ impl Graph {
     /// let proto = "invalid";
     /// Graph::from_protobuff(proto).map(|_| ()).unwrap_err();
     /// ```
-    pub fn from_protobuff(data: &str) -> Result<Graph> {
+    pub fn from_protobuff(data: &str) -> Result<OwnedGraph> {
         let buffer = StrBuffer::new(data);
         let graph = unsafe { tf::TF_NewGraph() };
         let graph = Self(graph);
@@ -32,7 +32,7 @@ impl Graph {
             tf::TF_DeleteImportGraphDefOptions(import_options);
 
             status.to_result()?;
-            Ok(graph)
+            Ok(OwnedGraph(graph))
         }
     }
 
@@ -81,9 +81,18 @@ impl Graph {
     }
 }
 
-impl Drop for Graph {
+/// Graph object which will be released when dropped
+pub struct OwnedGraph(Graph);
+
+impl ops::Deref for OwnedGraph {
+    type Target = Graph;
+
+    fn deref(&self) -> &Graph { &self.0 }
+}
+
+impl Drop for OwnedGraph {
     fn drop(&mut self) {
-        unsafe { tf::TF_DeleteGraph(self.0) }
+        unsafe { tf::TF_DeleteGraph((self.0).0) }
     }
 }
 

@@ -10,6 +10,7 @@ pub mod tensor_type;
 pub mod output;
 pub mod input;
 pub mod operation;
+pub mod session;
 
 pub use error::{TFError, Error};
 pub(crate) use error::Status;

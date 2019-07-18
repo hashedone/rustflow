@@ -3,15 +3,10 @@ use crate::{TensorType, Error, Result};
 use std::{self, mem, ops, slice};
 
 
-/// Trait for any type which can be used as Tensorflow tensor
-pub(crate) trait TFTensor {
-    fn tensor(&self) -> &tf::TF_Tensor;
-}
-
 /// Internally allocated Tensor
 pub struct Tensor<T: 'static> {
     // Unsafe code assumes, this is always valild TF_Tensor object
-    tensor: *mut tf::TF_Tensor,
+    pub(crate) tensor: *mut tf::TF_Tensor,
 
     // Usize would be more natural choice here, but Tensorflow
     // uses i64 internally
@@ -80,12 +75,6 @@ impl<T: TensorType + Copy> Tensor<T> {
         tensor.data.copy_from_slice(data);
 
         Ok(tensor)
-    }
-}
-
-impl<T> TFTensor for Tensor<T> {
-    fn tensor(&self) -> &tf::TF_Tensor {
-        unsafe { &*self.tensor }
     }
 }
 
