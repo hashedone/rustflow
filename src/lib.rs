@@ -26,6 +26,7 @@ pub use session::Session;
 
 type Result<T> = std::result::Result<T, Error>;
 
+/// Returns tensorflow version
 pub fn tf_version() -> &'static str {
     unsafe {
         std::ffi::CStr::from_ptr(tf::TF_Version())

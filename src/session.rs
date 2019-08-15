@@ -83,7 +83,7 @@ impl<'a> SessionBuilder<'a> {
     pub(crate) unsafe fn with_graph(graph: *mut tf::TF_Graph)
         -> Result<Self>
     {
-        let options = unsafe { tf::TF_NewSessionOptions() };
+        let options = tf::TF_NewSessionOptions();
 
         if options.is_null() {
             return Err(Error::ObjectCreationFailure);
