@@ -38,7 +38,7 @@ impl<T: TensorType> Tensor<T> {
         );
 
         if tensor.is_null() {
-            return Err(Error::TensorCreationFailure);
+            return Err(Error::ObjectCreationFailure);
         }
 
         let data = slice::from_raw_parts_mut(tf::TF_TensorData(tensor) as _, len as usize);

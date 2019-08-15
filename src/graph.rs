@@ -1,6 +1,7 @@
 use tf;
 use std::{ffi, iter, ops};
 use crate::{Buffer, StrBuffer, Result, Status, Operation};
+use crate::session::SessionBuilder;
 
 
 /// Thin wrapper over tensorflow graph
@@ -28,7 +29,12 @@ impl Graph {
         unsafe {
             let import_options = tf::TF_NewImportGraphDefOptions();
 
-            tf::TF_GraphImportGraphDef(graph.0, buffer.buffer(), import_options, status.get());
+            tf::TF_GraphImportGraphDef(
+                graph.0,
+                buffer.buffer(),
+                import_options,
+                status.get()
+            );
             tf::TF_DeleteImportGraphDefOptions(import_options);
 
             status.to_result()?;
@@ -78,6 +84,11 @@ impl Graph {
             };
             Some(operation)
         })
+    }
+
+    /// Returns session builder with this graph assigned
+    pub fn session_builder<'a>(&'a self) -> Result<SessionBuilder<'a>> {
+        unsafe { SessionBuilder::with_graph(self.0) }
     }
 }
 

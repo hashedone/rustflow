@@ -131,8 +131,8 @@ pub enum Error {
         shape: Vec<i64>,
     },
 
-    #[fail(display = "Tensor creation failed")]
-    TensorCreationFailure,
+    #[fail(display = "TF object creation failed")]
+    ObjectCreationFailure,
 }
 
 impl From<TFError> for Error {

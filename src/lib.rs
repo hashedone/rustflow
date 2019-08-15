@@ -22,6 +22,7 @@ pub use tensor_type::TensorType;
 pub use output::Output;
 pub use input::Input;
 pub use operation::Operation;
+pub use session::Session;
 
 type Result<T> = std::result::Result<T, Error>;
 
