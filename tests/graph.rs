@@ -1,6 +1,5 @@
 use rustflow::Graph;
 
-
 #[test]
 fn loads_valid_protobuff_graph() {
     let proto = include_str!("data/addition.pb");

@@ -1,7 +1,6 @@
-use tf;
-use std::fmt;
 use failure::Fail;
-
+use std::fmt;
+use tf;
 
 /// Wrapper for tensorflow `TF_Status`, ensuring its proper construction
 /// and deletion.
@@ -32,9 +31,7 @@ impl Status {
     }
 
     fn code(&self) -> tf::TF_Code {
-        unsafe {
-            tf::TF_GetCode(self.0)
-        }
+        unsafe { tf::TF_GetCode(self.0) }
     }
 
     fn message(&self) -> String {
@@ -54,9 +51,7 @@ impl Status {
 
 impl Drop for Status {
     fn drop(&mut self) {
-        unsafe {
-            tf::TF_DeleteStatus(self.0)
-        }
+        unsafe { tf::TF_DeleteStatus(self.0) }
     }
 }
 
@@ -125,11 +120,11 @@ pub enum Error {
     #[fail(display = "Tensorflow error: {}", _0)]
     TFError(TFError),
 
-    #[fail(display = "Tensor shape {:?} not valid for tensor data of len {}", shape, data_len)]
-    InvalidShape {
-        data_len: usize,
-        shape: Vec<i64>,
-    },
+    #[fail(
+        display = "Tensor shape {:?} not valid for tensor data of len {}",
+        shape, data_len
+    )]
+    InvalidShape { data_len: usize, shape: Vec<i64> },
 
     #[fail(display = "TF object creation failed")]
     ObjectCreationFailure,

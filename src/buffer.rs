@@ -1,6 +1,5 @@
-use tf;
 use std::{self, marker::PhantomData};
-
+use tf;
 
 /// Trait for any object which can be used as TF Buffer.
 pub(crate) trait Buffer {
@@ -40,10 +39,7 @@ impl<'a> StrBuffer<'a> {
     /// ```
     pub fn new_internal(data: &str) -> StrBuffer<'static> {
         let buffer = unsafe {
-            tf::TF_NewBufferFromString(
-                data.as_ptr() as *const std::ffi::c_void,
-                data.len()
-            )
+            tf::TF_NewBufferFromString(data.as_ptr() as *const std::ffi::c_void, data.len())
         };
 
         StrBuffer {

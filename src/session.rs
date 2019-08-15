@@ -1,5 +1,5 @@
+use crate::{Error, Graph, Result, Status};
 use tf;
-use crate::{Result, Error, Status, Graph};
 
 /// Thin wrapper over tensorflow session
 pub struct Session(*mut tf::TF_Session);
@@ -85,19 +85,14 @@ impl<'a> SessionBuilder<'a> {
     /// let graph = Graph::from_protobuff(proto).unwrap();
     /// let builder = SessionBuilder::with_graph(&graph).unwrap();
     /// ```
-    pub fn with_graph(graph: &'a Graph)
-        -> Result<Self>
-    {
+    pub fn with_graph(graph: &'a Graph) -> Result<Self> {
         let options = unsafe { tf::TF_NewSessionOptions() };
 
         if options.is_null() {
             return Err(Error::ObjectCreationFailure);
         }
 
-        Ok(SessionBuilder {
-            options,
-            graph,
-        })
+        Ok(SessionBuilder { options, graph })
     }
 
     /// Builds final session object
@@ -113,13 +108,8 @@ impl<'a> SessionBuilder<'a> {
     ///     .unwrap();
     pub fn build(self) -> Result<Session> {
         let mut status = Status::new();
-        let session = unsafe {
-            tf::TF_NewSession(
-                self.graph.get_ptr(),
-                self.options,
-                status.get()
-            )
-        };
+        let session =
+            unsafe { tf::TF_NewSession(self.graph.get_ptr(), self.options, status.get()) };
 
         status.to_result()?;
         Ok(Session(session))
@@ -128,8 +118,6 @@ impl<'a> SessionBuilder<'a> {
 
 impl<'a> Drop for SessionBuilder<'a> {
     fn drop(&mut self) {
-        unsafe {
-            tf::TF_DeleteSessionOptions(self.options)
-        }
+        unsafe { tf::TF_DeleteSessionOptions(self.options) }
     }
 }

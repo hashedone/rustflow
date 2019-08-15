@@ -1,7 +1,6 @@
-use tf;
+use crate::{Buffer, Operation, Result, Status, StrBuffer};
 use std::{ffi, iter, ops};
-use crate::{Buffer, StrBuffer, Result, Status, Operation};
-
+use tf;
 
 /// Thin wrapper over tensorflow graph
 pub struct Graph(*mut tf::TF_Graph);
@@ -28,12 +27,7 @@ impl Graph {
         unsafe {
             let import_options = tf::TF_NewImportGraphDefOptions();
 
-            tf::TF_GraphImportGraphDef(
-                graph.0,
-                buffer.buffer(),
-                import_options,
-                status.get()
-            );
+            tf::TF_GraphImportGraphDef(graph.0, buffer.buffer(), import_options, status.get());
             tf::TF_DeleteImportGraphDefOptions(import_options);
 
             status.to_result()?;
@@ -71,7 +65,7 @@ impl Graph {
     /// let ops = graph.operations();
     /// # assert_eq!(4, ops.count());
     /// ```
-    pub fn operations<'a>(&'a self) -> impl Iterator<Item=Operation<'a>> {
+    pub fn operations<'a>(&'a self) -> impl Iterator<Item = Operation<'a>> {
         let mut pos = 0usize;
         iter::from_fn(move || {
             let operation = unsafe {
@@ -99,7 +93,9 @@ pub struct OwnedGraph(Graph);
 impl ops::Deref for OwnedGraph {
     type Target = Graph;
 
-    fn deref(&self) -> &Graph { &self.0 }
+    fn deref(&self) -> &Graph {
+        &self.0
+    }
 }
 
 impl Drop for OwnedGraph {
@@ -107,4 +103,3 @@ impl Drop for OwnedGraph {
         unsafe { tf::TF_DeleteGraph((self.0).0) }
     }
 }
-

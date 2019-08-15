@@ -1,6 +1,5 @@
-use tf;
 use std::marker::PhantomData;
-
+use tf;
 
 /// Thin wrapper over tensorflow input object. TF_Input keeps TF_Operation
 /// object internally, so artificial lifetime is added.

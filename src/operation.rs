@@ -1,7 +1,6 @@
-use crate::{Output, Input};
-use tf;
+use crate::{Input, Output};
 use std::marker::PhantomData;
-
+use tf;
 
 /// Thin wrapper over tensroflow operation pointer. TF_Operation
 /// objects are not managed by its own, instead they are managed by
@@ -30,10 +29,8 @@ impl<'a> Operation<'a> {
     /// assert_eq!("x", op.name());
     /// ```
     pub fn name(&self) -> &str {
-        unsafe {
-            std::ffi::CStr::from_ptr(tf::TF_OperationName(self.operation))
-                .to_str()
-        }.unwrap_or("")
+        unsafe { std::ffi::CStr::from_ptr(tf::TF_OperationName(self.operation)).to_str() }
+            .unwrap_or("")
     }
 
     /// ```rust
@@ -44,10 +41,8 @@ impl<'a> Operation<'a> {
     /// assert_eq!("Placeholder", op.op_type());
     /// ```
     pub fn op_type(&self) -> &str {
-        unsafe {
-            std::ffi::CStr::from_ptr(tf::TF_OperationOpType(self.operation))
-                .to_str()
-        }.unwrap_or("")
+        unsafe { std::ffi::CStr::from_ptr(tf::TF_OperationOpType(self.operation)).to_str() }
+            .unwrap_or("")
     }
 
     /// ```rust
@@ -58,10 +53,8 @@ impl<'a> Operation<'a> {
     /// op.op_type();
     /// ```
     pub fn device(&self) -> &str {
-        unsafe {
-            std::ffi::CStr::from_ptr(tf::TF_OperationDevice(self.operation))
-                .to_str()
-        }.unwrap_or("")
+        unsafe { std::ffi::CStr::from_ptr(tf::TF_OperationDevice(self.operation)).to_str() }
+            .unwrap_or("")
     }
 
     /// ```rust
@@ -71,10 +64,12 @@ impl<'a> Operation<'a> {
     /// let op = graph.operation_by_name("x").unwrap();
     /// assert_eq!(1, op.outputs().count());
     /// ```
-    pub fn outputs(&self) -> impl Iterator<Item=Output<'a>> {
+    pub fn outputs(&self) -> impl Iterator<Item = Output<'a>> {
         let cnt = unsafe { tf::TF_OperationNumOutputs(self.operation) };
         let op = self.operation;
-        (0..cnt).into_iter().map(move |idx| unsafe { Output::new(op, idx) })
+        (0..cnt)
+            .into_iter()
+            .map(move |idx| unsafe { Output::new(op, idx) })
     }
 
     /// ```rust
@@ -84,10 +79,11 @@ impl<'a> Operation<'a> {
     /// let op = graph.operation_by_name("x").unwrap();
     /// assert_eq!(0, op.inputs().count());
     /// ```
-    pub fn inputs(&self) -> impl Iterator<Item=Input<'a>> {
+    pub fn inputs(&self) -> impl Iterator<Item = Input<'a>> {
         let cnt = unsafe { tf::TF_OperationNumInputs(self.operation) };
         let op = self.operation;
-        (0..cnt).into_iter().map(move |idx| unsafe { Input::new(op, idx) })
+        (0..cnt)
+            .into_iter()
+            .map(move |idx| unsafe { Input::new(op, idx) })
     }
-
 }

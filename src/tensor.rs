@@ -1,7 +1,6 @@
-use tf;
-use crate::{TensorType, Error, Result};
+use crate::{Error, Result, TensorType};
 use std::{self, mem, ops, slice};
-
+use tf;
 
 /// Internally allocated Tensor
 pub struct Tensor<T: 'static> {
@@ -23,7 +22,9 @@ impl<T> Tensor<T> {
     /// # use rustflow::Tensor;
     /// assert_eq!(&[2, 2], Tensor::from_slice(&[2, 2], &[1, 2, 3, 4]).unwrap().shape());
     ///```
-    pub fn shape(&self) -> &[i64] { &self.shape }
+    pub fn shape(&self) -> &[i64] {
+        &self.shape
+    }
 }
 
 impl<T: TensorType> Tensor<T> {
@@ -33,8 +34,9 @@ impl<T: TensorType> Tensor<T> {
         let len: i64 = shape.iter().product();
         let tensor = tf::TF_AllocateTensor(
             T::TF_TYPE,
-            shape.as_ptr(), shape.len() as i32,
-            mem::size_of::<T>() * len as usize
+            shape.as_ptr(),
+            shape.len() as i32,
+            mem::size_of::<T>() * len as usize,
         );
 
         if tensor.is_null() {
