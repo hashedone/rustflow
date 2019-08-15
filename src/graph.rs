@@ -65,7 +65,7 @@ impl Graph {
     /// let ops = graph.operations();
     /// # assert_eq!(4, ops.count());
     /// ```
-    pub fn operations<'a>(&'a self) -> impl Iterator<Item = Operation<'a>> {
+    pub fn operations(&self) -> impl Iterator<Item=Operation> {
         let mut pos = 0usize;
         iter::from_fn(move || {
             let operation = unsafe {

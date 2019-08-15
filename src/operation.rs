@@ -68,7 +68,6 @@ impl<'a> Operation<'a> {
         let cnt = unsafe { tf::TF_OperationNumOutputs(self.operation) };
         let op = self.operation;
         (0..cnt)
-            .into_iter()
             .map(move |idx| unsafe { Output::new(op, idx) })
     }
 
@@ -83,7 +82,6 @@ impl<'a> Operation<'a> {
         let cnt = unsafe { tf::TF_OperationNumInputs(self.operation) };
         let op = self.operation;
         (0..cnt)
-            .into_iter()
             .map(move |idx| unsafe { Input::new(op, idx) })
     }
 }
