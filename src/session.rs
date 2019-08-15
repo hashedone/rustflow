@@ -1,6 +1,5 @@
 use tf;
-use crate::{Result, Error, Status};
-use std::marker::PhantomData;
+use crate::{Result, Error, Status, Graph};
 
 /// Thin wrapper over tensorflow session
 pub struct Session(*mut tf::TF_Session);
@@ -71,19 +70,25 @@ impl Drop for ClosedSession {
 /// which is not owned by SessionBuilder.
 pub struct SessionBuilder<'a> {
     options: *mut tf::TF_SessionOptions,
-    graph: *mut tf::TF_Graph,
-    phantom: PhantomData<&'a tf::TF_Graph>,
+    graph: &'a Graph,
 }
 
 /// Thin wrapper over tensorflow session option for
 /// building actual session object
 impl<'a> SessionBuilder<'a> {
-    /// Function is unsafe, because its callee responsibility to ensure,
-    /// that graph is valid not-null TF_Graph object
-    pub(crate) unsafe fn with_graph(graph: *mut tf::TF_Graph)
+    /// Creates new session builder with associated with graph
+    ///
+    /// ```rust
+    /// # use rustflow::Graph;
+    /// # use rustflow::session::SessionBuilder;
+    /// let proto = include_str!("../tests/data/addition.pb");
+    /// let graph = Graph::from_protobuff(proto).unwrap();
+    /// let builder = SessionBuilder::with_graph(&graph).unwrap();
+    /// ```
+    pub fn with_graph(graph: &'a Graph)
         -> Result<Self>
     {
-        let options = tf::TF_NewSessionOptions();
+        let options = unsafe { tf::TF_NewSessionOptions() };
 
         if options.is_null() {
             return Err(Error::ObjectCreationFailure);
@@ -92,16 +97,25 @@ impl<'a> SessionBuilder<'a> {
         Ok(SessionBuilder {
             options,
             graph,
-            phantom: PhantomData,
         })
     }
 
     /// Builds final session object
+    ///
+    /// ```rust
+    /// # use rustflow::Graph;
+    /// # use rustflow::session::SessionBuilder;
+    /// let proto = include_str!("../tests/data/addition.pb");
+    /// let graph = Graph::from_protobuff(proto).unwrap();
+    /// let session = SessionBuilder::with_graph(&graph)
+    ///     .unwrap()
+    ///     .build()
+    ///     .unwrap();
     pub fn build(self) -> Result<Session> {
         let mut status = Status::new();
         let session = unsafe {
             tf::TF_NewSession(
-                self.graph,
+                self.graph.get_ptr(),
                 self.options,
                 status.get()
             )

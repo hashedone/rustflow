@@ -27,6 +27,10 @@ pub use session::Session;
 type Result<T> = std::result::Result<T, Error>;
 
 /// Returns tensorflow version
+///
+/// ```rust
+/// # use rustflow::tf_version;
+/// assert!(!tf_version().is_empty());
 pub fn tf_version() -> &'static str {
     unsafe {
         std::ffi::CStr::from_ptr(tf::TF_Version())

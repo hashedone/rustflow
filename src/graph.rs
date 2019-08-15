@@ -1,7 +1,6 @@
 use tf;
 use std::{ffi, iter, ops};
 use crate::{Buffer, StrBuffer, Result, Status, Operation};
-use crate::session::SessionBuilder;
 
 
 /// Thin wrapper over tensorflow graph
@@ -67,8 +66,8 @@ impl Graph {
     ///
     /// ```rust
     /// # use rustflow::Graph;
-    /// # let proto = include_str!("../tests/data/addition.pb");
-    /// # let graph = Graph::from_protobuff(proto).unwrap();
+    /// let proto = include_str!("../tests/data/addition.pb");
+    /// let graph = Graph::from_protobuff(proto).unwrap();
     /// let ops = graph.operations();
     /// # assert_eq!(4, ops.count());
     /// ```
@@ -86,9 +85,11 @@ impl Graph {
         })
     }
 
-    /// Returns session builder with this graph assigned
-    pub fn session_builder<'a>(&'a self) -> Result<SessionBuilder<'a>> {
-        unsafe { SessionBuilder::with_graph(self.0) }
+    /// Returns internal graph pointer. This is unsafe, because
+    /// if callee have to make sure he would not corrupt the
+    /// object under pointer.
+    pub(crate) unsafe fn get_ptr(&self) -> *mut tf::TF_Graph {
+        self.0
     }
 }
 
